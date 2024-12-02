@@ -32,7 +32,10 @@ namespace lab1.Services
         {
             while (true)
             {
-                Console.Clear(); // Очистка консоли перед каждым отображением меню
+                if (!IsRunningTests())
+                {
+                    Console.Clear();
+                }
                 DisplayMenu();
                 var choice = await GetUserChoiceAsync();
                 if (_menuActions.ContainsKey(choice))
@@ -65,53 +68,100 @@ namespace lab1.Services
             return choice;
         }
 
-        private async Task AddBookAsync()
+        public async Task AddBookAsync()
         {
-            Console.Clear();
-            _userOutput.WriteOutput("Введите название книги:");
-            var title = _userInput.ReadInput();
-
-            _userOutput.WriteOutput("Введите имя автора:");
-            var author = _userInput.ReadInput();
-
-            _userOutput.WriteOutput("Введите жанры (через запятую):");
-            var genres = _userInput.ReadInput().Split(',');
-
-            _userOutput.WriteOutput("Введите год публикации книги:");
-            var year = int.Parse(_userInput.ReadInput());
-
-            _userOutput.WriteOutput("Введите аннотацию книги:");
-            var annotation = _userInput.ReadInput();
-
-            _userOutput.WriteOutput("Введите ISBN книги:");
-            var isbn = _userInput.ReadInput();
-
-            var book = new ConcreteBook(title, author, genres, year, annotation, isbn);
-            await _bookCatalog.AddBookAsync(book);
-
-            _userOutput.WriteOutput("Книга добавлена в каталог.");
-            Console.WriteLine("Нажмите любую клавишу для продолжения...");
-            Console.ReadKey();
+            try
+            {
+                _userOutput.WriteOutput("Введите название книги:");
+                var title = _userInput.ReadInput();
+        
+                _userOutput.WriteOutput("Введите автора книги:");
+                var author = _userInput.ReadInput();
+        
+                _userOutput.WriteOutput("Введите жанры книги (через запятую):");
+                var genresInput = _userInput.ReadInput();
+                var genres = genresInput.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+        
+                _userOutput.WriteOutput("Введите год публикации:");
+                var year = int.Parse(_userInput.ReadInput());
+        
+                _userOutput.WriteOutput("Введите аннотацию:");
+                var annotation = _userInput.ReadInput();
+        
+                _userOutput.WriteOutput("Введите ISBN:");
+                var isbn = _userInput.ReadInput();
+        
+                // Console.Clear() вызывается только в реальной среде
+                if (!IsRunningTests())
+                {
+                    Console.Clear();
+                }
+        
+                var book = new ConcreteBook(title, author, genres, year, annotation, isbn);
+                await _bookCatalog.AddBookAsync(book);
+                _userOutput.WriteOutput("Книга добавлена в каталог.");
+            }
+            catch (Exception ex)
+            {
+                _userOutput.WriteOutput($"Произошла ошибка: {ex.Message}");
+            }
+        
+            if (!IsRunningTests())
+            {
+                Console.WriteLine("Нажмите любую клавишу для продолжения...");
+                Console.ReadKey();
+            }
+            else
+            {
+                await Task.CompletedTask;
+            }
         }
 
-        private async Task FindByTitleAsync()
+        private bool IsRunningTests()
         {
-            Console.Clear();
+            // Логика для определения, запущены ли тесты
+            return AppDomain.CurrentDomain.FriendlyName.Contains("Test");
+        }
+
+        public async Task FindByTitleAsync()
+        {
+            if (!IsRunningTests())
+            {
+                Console.Clear();
+            }
             _userOutput.WriteOutput("Введите название книги:");
             var titleFragment = _userInput.ReadInput();
 
             var books = await _bookCatalog.FindByTitleAsync(titleFragment);
-            foreach (var book in books)
+            if (books.Any())
             {
-                _userOutput.WriteOutput($"Название: {book.Title}, Автор: {book.Author}");
+                foreach (var book in books)
+                {
+                    _userOutput.WriteOutput($"Название: {book.Title}, Автор: {book.Author}");
+                }
             }
-            Console.WriteLine("Нажмите любую клавишу для продолжения...");
-            Console.ReadKey();
+            else
+            {
+                _userOutput.WriteOutput("Книги не найдены.");
+            }
+            
+            if (!IsRunningTests())
+            {
+                Console.WriteLine("Нажмите любую клавишу для продолжения...");
+                Console.ReadKey();
+            }
+            else
+            {
+                await Task.CompletedTask;
+            }
         }
 
         private async Task FindByAuthorAsync()
         {
-            Console.Clear();
+            if (!IsRunningTests())
+            {
+                Console.Clear();
+            }
             _userOutput.WriteOutput("Введите имя автора:");
             var authorName = _userInput.ReadInput();
 
@@ -120,13 +170,23 @@ namespace lab1.Services
             {
                 _userOutput.WriteOutput($"Название: {book.Title}, Автор: {book.Author}");
             }
-            Console.WriteLine("Нажмите любую клавишу для продолжения...");
-            Console.ReadKey();
+            if (!IsRunningTests())
+            {
+                Console.WriteLine("Нажмите любую клавишу для продолжения...");
+                Console.ReadKey();
+            }
+            else
+            {
+                await Task.CompletedTask;
+            }
         }
 
         private async Task FindByISBNAsync()
         {
-            Console.Clear();
+            if (!IsRunningTests())
+            {
+                Console.Clear();
+            }
             _userOutput.WriteOutput("Введите ISBN книги:");
             var isbn = _userInput.ReadInput();
 
@@ -139,13 +199,23 @@ namespace lab1.Services
             {
                 _userOutput.WriteOutput("Книга не найдена.");
             }
-            Console.WriteLine("Нажмите любую клавишу для продолжения...");
-            Console.ReadKey();
+            if (!IsRunningTests())
+            {
+                Console.WriteLine("Нажмите любую клавишу для продолжения...");
+                Console.ReadKey();
+            }
+            else
+            {
+                await Task.CompletedTask;
+            }
         }
 
         private async Task FindByKeywordsAsync()
         {
-            Console.Clear();
+            if (!IsRunningTests())
+            {
+                Console.Clear();
+            }
             _userOutput.WriteOutput("Введите ключевые слова (через запятую):");
             var keywords = _userInput.ReadInput().Split(',');
 
@@ -154,15 +224,29 @@ namespace lab1.Services
             {
                 _userOutput.WriteOutput($"Название: {book.Title}, Найдено ключевых слов: {string.Join(", ", foundKeywords)}");
             }
-            Console.WriteLine("Нажмите любую клавишу для продолжения...");
-            Console.ReadKey();
+            if (!IsRunningTests())
+            {
+                Console.WriteLine("Нажмите любую клавишу для продолжения...");
+                Console.ReadKey();
+            }
+            else
+            {
+                await Task.CompletedTask;
+            }
         }
 
-        private async Task ExitAsync()
+        public async Task ExitAsync()
         {
             _userOutput.WriteOutput("Выход из программы. До свидания!");
-            await Task.Delay(1000);
-            Environment.Exit(0); // Завершить программу
+            if (!IsRunningTests())
+            {
+                await Task.Delay(1000);
+                Environment.Exit(0);
+            }
+            else
+            {
+                await Task.CompletedTask;
+            }
         }
     }
 }
