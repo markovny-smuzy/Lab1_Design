@@ -5,7 +5,7 @@ namespace lab1
 {
     class Program
     {
-        static async Task Main(string[] args)
+        static async Task Main()
         {
             var userInput = new ConsoleUserInput();
             var userOutput = new ConsoleUserOutput();
