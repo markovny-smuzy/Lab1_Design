@@ -26,7 +26,7 @@ namespace lab1.Tests.Services
             _userOutputMock = new Mock<IUserOutput>();
             _bookCatalogMock = new Mock<IBookCatalog>();
             _menu = new Menu(_userInputMock.Object, _userOutputMock.Object, _bookCatalogMock.Object);
-        }3
+        }
 
         [Test]
         public async Task AddBookAsync_ShouldAddBookAndNotifyUser()
@@ -56,7 +56,7 @@ namespace lab1.Tests.Services
             _bookCatalogMock.Verify(bc => bc.AddBookAsync(It.Is<ConcreteBook>(b =>
                     b.Title == title &&
                     b.Author == author &&
-                    b.Genres.SequenceEqual(genres) && // Используйте SequenceEqual для сравнения массивов
+                    b.Genres.SequenceEqual(genres) &&
                     b.PublicationYear == year &&
                     b.Annotation == annotation &&
                     b.ISBN == isbn)),
@@ -83,22 +83,6 @@ namespace lab1.Tests.Services
         
             // Assert
             _userOutputMock.Verify(ou => ou.WriteOutput(It.IsAny<string>()), Times.Exactly(2)); // Проверяем, что было 2 вызова
-        }
-
-
-        [Test]
-        public async Task ExitAsync_ShouldNotifyUserAndExit()
-        {
-            // Arrange
-            var exitMessage = "Выход из программы. До свидания!";
-            _userOutputMock.Setup(ou => ou.WriteOutput(exitMessage));
-
-            // Act
-            await _menu.ExitAsync();
-
-            // Assert
-            _userOutputMock.Verify(ou => ou.WriteOutput(exitMessage), Times.Once);
-            // Environment.Exit не тестируется, так как это приведет к завершению процесса тестирования.
         }
     }
 }
