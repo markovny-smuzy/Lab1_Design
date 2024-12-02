@@ -60,7 +60,7 @@ namespace lab1.Services
         private async Task<int> GetUserChoiceAsync()
         {
             _userOutput.WriteOutput("Ваш выбор:");
-            var input = _userInput.ReadInput();
+            var input = await Task.Run(() => _userInput.ReadInput());
             int.TryParse(input, out int choice);
             return choice;
         }
@@ -161,6 +161,7 @@ namespace lab1.Services
         private async Task ExitAsync()
         {
             _userOutput.WriteOutput("Выход из программы. До свидания!");
+            await Task.Delay(1000);
             Environment.Exit(0); // Завершить программу
         }
     }
