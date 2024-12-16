@@ -164,11 +164,17 @@ namespace lab1.Services
             }
             _userOutput.WriteOutput("Введите имя автора:");
             var authorName = _userInput.ReadInput();
-
             var books = await _bookCatalog.FindByAuthorAsync(authorName);
-            foreach (var book in books)
+            if (books.Any())
             {
-                _userOutput.WriteOutput($"Название: {book.Title}, Автор: {book.Author}");
+                foreach (var book in books) 
+                {
+                    _userOutput.WriteOutput($"Название: {book.Title}, Автор: {book.Author}");
+                }
+            }
+            else
+            {
+                _userOutput.WriteOutput("Книги не найдены.");
             }
             if (!IsRunningTests())
             {
@@ -197,7 +203,7 @@ namespace lab1.Services
             }
             else
             {
-                _userOutput.WriteOutput("Книга не найдена.");
+                _userOutput.WriteOutput("Книги не найдены.");
             }
             if (!IsRunningTests())
             {
@@ -220,9 +226,16 @@ namespace lab1.Services
             var keywords = _userInput.ReadInput().Split(',');
 
             var results = await _bookCatalog.FindByKeywordsAsync(keywords);
-            foreach (var (book, foundKeywords) in results)
+            if (results.Any())
             {
-                _userOutput.WriteOutput($"Название: {book.Title}, Найдено ключевых слов: {string.Join(", ", foundKeywords)}");
+                foreach (var (book, foundKeywords) in results)
+                {
+                    _userOutput.WriteOutput($"Название: {book.Title}, Найдено ключевых слов: {string.Join(", ", foundKeywords)}");
+                }
+            }
+            else
+            {
+                _userOutput.WriteOutput("Книги не найдены.");
             }
             if (!IsRunningTests())
             {

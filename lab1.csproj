@@ -14,4 +14,19 @@
       <PackageReference Include="NUnit" Version="4.2.2" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Update="Tests\BookTests.cs">
+        <Link>lab1.Tests\BookTests.cs</Link>
+      </Compile>
+      <Compile Update="Tests\ConcreteBookTests.cs">
+        <Link>lab1.Tests\ConcreteBookTests.cs</Link>
+      </Compile>
+      <Compile Update="Tests\JsonBookRepositoryTests.cs">
+        <Link>lab1.Tests\JsonBookRepositoryTests.cs</Link>
+      </Compile>
+      <Compile Update="Tests\MenuTests.cs">
+        <Link>lab1.Tests\MenuTests.cs</Link>
+      </Compile>
+    </ItemGroup>
+
 </Project>
